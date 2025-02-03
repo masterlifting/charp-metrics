@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricsCollector", "MetricsCollector\MetricsCollector.csproj", "{50E13B15-EC9C-30ED-F543-6DC06CA6EFEB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50E13B15-EC9C-30ED-F543-6DC06CA6EFEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50E13B15-EC9C-30ED-F543-6DC06CA6EFEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50E13B15-EC9C-30ED-F543-6DC06CA6EFEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50E13B15-EC9C-30ED-F543-6DC06CA6EFEB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D05E14E9-60F7-4086-96C4-CD2BDE44C6A0}
+	EndGlobalSection
+EndGlobal
