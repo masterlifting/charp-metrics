@@ -1,23 +1,41 @@
 version: "3.8"
 
+networks:
+  metricscollector:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+    driver: local
+
 services:
   metricscollector:
+    container_name: metricscollector
     build:
       context: .
       dockerfile: MetricsCollector/Dockerfile
     ports:
       - "5000:8080"
+    networks:
+      - metricscollector
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     ports:
       - "9090:9090"
+    networks:
+      - metricscollector
 
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana
     ports:
       - "3000:3000"
     depends_on:
       - prometheus
+    networks:
+      - metricscollector
