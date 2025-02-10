@@ -1,4 +1,6 @@
-﻿var builder = Host.CreateApplicationBuilder(args);
+﻿using Microsoft.AspNetCore.Builder;
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMetrics();
 builder.Services.AddOpenTelemetry()
@@ -13,8 +15,11 @@ builder.Services.AddOpenTelemetry()
     .AddProcessInstrumentation()
     .AddRuntimeInstrumentation();
 
-    metrics.AddConsoleExporter(); //change to AddPrometheusExporter
+    metrics.AddPrometheusExporter();
 });
 
 var app = builder.Build();
+
+app.MapPrometheusScrapingEndpoint();
+
 app.Run();

@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  metricscollector:
+    build:
+      context: .
+      dockerfile: MetricsCollector/Dockerfile
+    ports:
+      - "5000:8080"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
