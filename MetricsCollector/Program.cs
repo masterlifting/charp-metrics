@@ -9,7 +9,8 @@ builder.Services.AddOpenTelemetry()
     .ConfigureResource(resourceBuilder => resourceBuilder.AddService(nameof(MetricsCollector)))
     .WithMetrics(metrics =>
     {
-        metrics.AddProcessInstrumentation()
+        metrics
+            .AddProcessInstrumentation()
             .AddRuntimeInstrumentation()
             .AddInMemoryExporter(metricsStore, options =>
             {
