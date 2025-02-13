@@ -1,13 +1,9 @@
 namespace MetricsCollector;
 
-public class Meter
+public static class Extensions
 {
-    public const string Name = nameof(MetricsCollector);
-    private readonly IMeterFactory _factory;
+    public static MeterProviderBuilder AddRequiredMeters(this MeterProviderBuilder builder) =>
+        builder
+            .AddMeter("process.memory.usage");
 
-
-    public Meter(IMeterFactory factory)
-    {
-        _factory = factory;
-    }
 }
