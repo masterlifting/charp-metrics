@@ -3,31 +3,41 @@ using OpenTelemetry;
 
 namespace MetricsCollector;
 
-public class CustomMetricsExporter : BaseExporter<Metric>
+/// <summary>
+/// Custom exporter to store metrics in memory and expose them through custom endpoints.
+/// </summary>
+/// <param name="interval">
+/// Interval in milliseconds to export metrics.
+/// </param>
+/// <param name="timeout">
+/// Timeout in milliseconds to export metrics.
+/// </param>
+public class CustomMetricsExporter(int interval, int timeout) : BaseExporter<Metric>
 {
+    /// Interval in milliseconds to export metrics.
+    public int Interval { get; } = interval;
+
+    /// Timeout in milliseconds to export metrics.
+    public int Timeout { get; } = timeout;
+
     private readonly Dictionary<string, CustomMetric> _store = new();
 
     private static readonly HashSet<string> NecessaryMetrics =
     [
         // Process Memory metrics
         "process.memory.usage",
-        "process.memory.virtual",
-        "dotnet.process.memory.working_set",
-        "dotnet.gc.heap.total_allocated",
-        "dotnet.gc.last_collection.memory.committed_size",
-        "dotnet.gc.last_collection.heap.size",
-    
+
         // Process CPU metrics
         "process.cpu.time",
         "process.cpu.count",
-        "dotnet.process.cpu.count",
-        "dotnet.process.cpu.time",
-        
+        // "dotnet.process.cpu.count",
+        // "dotnet.process.cpu.time",
+
         // Process IO metrics
-        "process.io.read.bytes",
-        "process.io.write.bytes",
-        "process.io.read.operations",
-        "process.io.write.operations",
+        "disk.total.reads",
+        "disk.total.writes",
+        "disk.read.speed",
+        "disk.write.speed"
     ];
 
     public override ExportResult Export(in Batch<Metric> metrics)
@@ -56,7 +66,7 @@ public class CustomMetricsExporter : BaseExporter<Metric>
 
     public List<string> GetAllNames() => _store.Keys.ToList();
     public List<CustomMetric> GetAll() => _store.Values.ToList();
-    public CustomMetric? GetMetric(string metricName) => _store.GetValueOrDefault(metricName);
+    public CustomMetric? GetMetric(string name) => _store.GetValueOrDefault(name);
 
     private static CustomMetricValue ToMetricValue(MetricType type, MetricPoint point)
     {
@@ -67,7 +77,9 @@ public class CustomMetricsExporter : BaseExporter<Metric>
                 MetricType.LongSumNonMonotonic => point.GetSumLong().ToString(),
                 MetricType.DoubleSum => point.GetSumDouble().ToString(CultureInfo.InvariantCulture),
                 MetricType.DoubleSumNonMonotonic => point.GetSumDouble().ToString(CultureInfo.InvariantCulture),
-                _ => $"Unhandled metric type: {type}"
+                MetricType.LongGauge => point.GetGaugeLastValueLong().ToString(),
+                MetricType.DoubleGauge => point.GetGaugeLastValueDouble().ToString(CultureInfo.InvariantCulture),
+                _ => $"Unhandled metric type: '{type}'"
             };
 
         return new CustomMetricValue(value, point.Tags, point.StartTime, point.EndTime);

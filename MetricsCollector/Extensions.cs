@@ -1,13 +1,20 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using MetricsCollector.Meters;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 namespace MetricsCollector;
 
 public static class Extensions
 {
-    public static MeterProviderBuilder AddCustomExporter(this MeterProviderBuilder builder, CustomMetricsExporter metricsExporter) =>
+    public static MeterProviderBuilder AddIOInstrumentation(this MeterProviderBuilder builder)
+    {
+        var collector = new IOMeter();
+        return builder.AddMeter("IOMetrics");
+    }
+    
+    public static MeterProviderBuilder AddCustomExporter(this MeterProviderBuilder builder, CustomMetricsExporter exporter) =>
         builder
-            .AddReader(new PeriodicExportingMetricReader(metricsExporter, 5000));
+            .AddReader(new PeriodicExportingMetricReader(exporter, exporter.Interval, exporter.Timeout));
 
     public static WebApplication UseOpenTelemetryCustomScrapingEndpoints(this WebApplication app)
     {
