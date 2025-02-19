@@ -12,7 +12,7 @@ namespace MetricsCollector;
 /// <param name="timeout">
 /// Timeout in milliseconds to export metrics.
 /// </param>
-public class CustomMetricsExporter(int interval, int timeout) : BaseExporter<Metric>
+public class CustomExporter(int interval, int timeout) : BaseExporter<Metric>
 {
     /// Interval in milliseconds to export metrics.
     public int Interval { get; } = interval;
@@ -24,16 +24,16 @@ public class CustomMetricsExporter(int interval, int timeout) : BaseExporter<Met
 
     private static readonly HashSet<string> NecessaryMetrics =
     [
-        // Process Memory metrics
+        // Memory metrics
         "process.memory.usage",
+        "system.memory.usage",
 
-        // Process CPU metrics
+        // CPU metrics
         "process.cpu.time",
         "process.cpu.count",
-        // "dotnet.process.cpu.count",
-        // "dotnet.process.cpu.time",
+        "system.cpu.usage",
 
-        // Process IO metrics
+        // IO metrics
         "disk.total.reads",
         "disk.total.writes",
         "disk.read.speed",
@@ -45,9 +45,7 @@ public class CustomMetricsExporter(int interval, int timeout) : BaseExporter<Met
         foreach (var metric in metrics)
         {
             if (!NecessaryMetrics.Contains(metric.Name))
-            {
                 continue;
-            }
 
             var values = new List<CustomMetricValue>(6); //6 is max capacity of most cases. We can improve this by using a pool or more complex logic
 

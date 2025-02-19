@@ -6,31 +6,35 @@ namespace MetricsCollector;
 
 public static class Extensions
 {
-    public static MeterProviderBuilder AddIOInstrumentation(this MeterProviderBuilder builder)
+    public static MeterProviderBuilder AddCustomInstrumentation(this MeterProviderBuilder builder)
     {
-        var collector = new IOMeter();
-        return builder.AddMeter("IOMetrics");
+        _ = new DiskMeter();
+        _ = new SystemMeter();
+
+        return builder
+            .AddMeter(DiskMeter.Name)
+            .AddMeter(SystemMeter.Name);
     }
-    
-    public static MeterProviderBuilder AddCustomExporter(this MeterProviderBuilder builder, CustomMetricsExporter exporter) =>
+
+    public static MeterProviderBuilder AddCustomExporter(this MeterProviderBuilder builder, CustomExporter exporter) =>
         builder
             .AddReader(new PeriodicExportingMetricReader(exporter, exporter.Interval, exporter.Timeout));
 
     public static WebApplication UseOpenTelemetryCustomScrapingEndpoints(this WebApplication app)
     {
-        app.MapGet("/custom/metrics", async (CustomMetricsExporter exporter, HttpContext context) =>
+        app.MapGet("/custom/metrics", async (CustomExporter exporter, HttpContext context) =>
         {
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(exporter.GetAll().Select(data => data.ToDto()));
         });
 
-        app.MapGet("/custom/metrics/names", async (CustomMetricsExporter exporter, HttpContext context) =>
+        app.MapGet("/custom/metrics/names", async (CustomExporter exporter, HttpContext context) =>
         {
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(exporter.GetAllNames());
         });
 
-        app.MapGet("/custom/metrics/{name}", async (string name, CustomMetricsExporter exporter, HttpContext context) =>
+        app.MapGet("/custom/metrics/{name}", async (string name, CustomExporter exporter, HttpContext context) =>
         {
             var metricData = exporter.GetMetric(name);
             if (metricData is null)
